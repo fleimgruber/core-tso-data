@@ -4,9 +4,7 @@ HTTP = HTTPRemoteProvider()
 configfile: "config.yaml"
 
 rule retrieve_data:
-    input: HTTP.remote(config['source'], keep_local=True, static=True)
     output: **{k: f"data/jao/Core _Static Grid Model_template_{k}.xlsx" for k in config['regions'].keys()}
-    shell: "unzip {input} -d data/jao"
 
 rule process_data:
     input: **rules.retrieve_data.output
