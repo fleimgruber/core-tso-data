@@ -36,12 +36,7 @@ def load_data(fn):
 
 
 def clean_symmetrical(s):
-    if isinstance(s, float) and isnan(s):
-        return s
-    if "asym" in s.lower():
-        return False
-    else:
-        return True
+    return s if isinstance(s, float) and isnan(s) else "asym" not in s.lower()
 
 
 def clean_taps(s):
@@ -197,8 +192,10 @@ if __name__ == "__main__":
     transformers = []
     for region, country in config["regions"].items():
         xls = load_data(snakemake.input[region])
-        for line_category in ["Lines", "Tielines"]:
-            lines.append(retrieve_lines(xls[line_category], country))
+        lines.extend(
+            retrieve_lines(xls[line_category], country)
+            for line_category in ["Lines", "Tielines"]
+        )
         transformers.append(retrieve_transformers(xls["Transformers"], country))
 
     lines = pd.concat(lines, ignore_index=True)
